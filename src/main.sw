@@ -110,7 +110,7 @@ fn inoise(x: u32, y: u32) -> I16 {
     return ans;
 }
 
-fn noise(x: u32, y: u32) -> u16{
+pub fn noise(x: u32, y: u32) -> u16{
     let mut  ans = inoise(x,y);
     ans = ans + I16::try_from(17308).unwrap();
     let mut pan = u32::from(ans.underlying())- u32::from(I16::indent());
