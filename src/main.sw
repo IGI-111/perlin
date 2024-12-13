@@ -1,10 +1,6 @@
 library;
 
 use sway_libs::fixed_point::ifp256::*;
-use sway_libs::signed_integers::i128::*;
-use sway_libs::signed_integers::i64::*;
-use sway_libs::signed_integers::i32::*;
-use sway_libs::signed_integers::i16::*;
 
 use std::hash::*;
 use std::u128::*;
@@ -104,7 +100,8 @@ fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP256 {
         i += 1;
     }
 
-    res_numerator / (VECS_DENOM * IFP256::from_uint(u64::from(scale)).pow(3))
+    let scale = IFP256::from_uint(u64::from(scale));
+    (((res_numerator / VECS_DENOM) / scale) / scale) /scale
 }
 
 pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> U128 {
@@ -124,4 +121,9 @@ pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> U128 {
     let perlin_scaled_shifted = (perlin * IFP256::from_uint(PERLIN_MAX / 2)) + IFP256::from_uint(PERLIN_MAX / 2);
 
     perlin_scaled_shifted.underlying().underlying()
+}
+
+#[test]
+fn test_run() {
+    compute_perlin(0, 0, 42, 1);
 }
