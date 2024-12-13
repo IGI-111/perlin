@@ -110,8 +110,25 @@ fn inoise(x: u32, y: u32) -> I16 {
     return ans;
 }
 
-pub fn noise(x: u32, y: u32) -> u16{
-    let mut  ans = inoise(x,y);
+pub fn noise(x: u32, y: u32, amp: u16, octaves: u16) -> u16 {
+
+    // add FBM
+    let mut ans = I16::zero();
+    let amp = I16::try_from(amp).unwrap();
+    let mut ux = x;
+    let mut uy = y;
+    let mut amp = amp;
+    let mut i = 0u16;
+    while i < octaves {
+        ans = ans + inoise(ux, uy) * amp;
+        amp = amp / I16::try_from(2).unwrap();
+        ux *= 2;
+        uy *= 2;
+
+        i+=1
+    }
+
+    // scale
     ans = ans + I16::try_from(17308).unwrap();
     let mut pan = u32::from(ans.underlying())- u32::from(I16::indent());
     // pan = (ans * 242L) >> 7.  That's the same as:
@@ -124,8 +141,8 @@ pub fn noise(x: u32, y: u32) -> u16{
 
 #[test]
 fn run_test() {
-    noise(1, 1);
-    noise(2, 1);
-    noise(2, 42);
+    noise(1, 1, 1, 2);
+    noise(2, 1, 2, 3);
+    noise(2, 42, 2, 3);
 }
  
