@@ -53,7 +53,7 @@ fn get_weight(corner_x: u32, corner_y: u32, x: u32, y: u32, scale: u32) -> u64 {
         res *= u64::from(scale - (x - corner_x));
     }
 
-    if corner_y > y {floor
+    if corner_y > y {
         res *= u64::from(scale - (corner_y - y));
     } else {
         res *= u64::from(scale - (y - corner_y));
@@ -125,5 +125,3 @@ pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> U128 {
 
     perlin_scaled_shifted.underlying().underlying()
 }
-
-
