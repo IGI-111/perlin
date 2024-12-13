@@ -1,4 +1,4 @@
-contract;
+library;
 
 // use perlin::compute_perlin;
 use sway_libs::signed_integers::i16::*;
