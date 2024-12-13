@@ -1,33 +1,33 @@
 library;
 
-use sway_libs::fixed_point::ifp256::*;
+use sway_libs::fixed_point::ifp128::*;
 
 use std::hash::*;
 use std::u128::*;
 
-const VECS_DENOM: IFP256 = IFP256::from_uint(1000);
+const VECS_DENOM: IFP128 = IFP128::from_uint(1000);
 const PERLIN_MAX: u64 = 64;
 
 // returns a random unit vector
 // implicit denominator of VECS_DENOM
-fn get_gradient_at(x: u32, y: u32, scale: u32, seed: u32) -> (IFP256, IFP256) {
-    const VECS: [(IFP256, IFP256); 16] = [
-        (IFP256::from_uint(1000), IFP256::from_uint(0)),
-        (IFP256::from_uint(923), IFP256::from_uint(382)),
-        (IFP256::from_uint(707), IFP256::from_uint(707)),
-        (IFP256::from_uint(382), IFP256::from_uint(923)),
-        (IFP256::from_uint(0), IFP256::from_uint(1000)),
-        (IFP256::from_uint(383).sign_reverse(), IFP256::from_uint(923)),
-        (IFP256::from_uint(708).sign_reverse(), IFP256::from_uint(707)),
-        (IFP256::from_uint(924).sign_reverse(), IFP256::from_uint(382)),
-        (IFP256::from_uint(1000).sign_reverse(), IFP256::from_uint(0)),
-        (IFP256::from_uint(924).sign_reverse(), IFP256::from_uint(383).sign_reverse()),
-        (IFP256::from_uint(708).sign_reverse(), IFP256::from_uint(708).sign_reverse()),
-        (IFP256::from_uint(383).sign_reverse(), IFP256::from_uint(924).sign_reverse()),
-        (IFP256::from_uint(1).sign_reverse(), IFP256::from_uint(1000).sign_reverse()),
-        (IFP256::from_uint(382), IFP256::from_uint(924).sign_reverse()),
-        (IFP256::from_uint(707), IFP256::from_uint(708).sign_reverse()),
-        (IFP256::from_uint(923), IFP256::from_uint(383).sign_reverse()),
+fn get_gradient_at(x: u32, y: u32, scale: u32, seed: u32) -> (IFP128, IFP128) {
+    const VECS: [(IFP128, IFP128); 16] = [
+        (IFP128::from_uint(1000), IFP128::from_uint(0)),
+        (IFP128::from_uint(923), IFP128::from_uint(382)),
+        (IFP128::from_uint(707), IFP128::from_uint(707)),
+        (IFP128::from_uint(382), IFP128::from_uint(923)),
+        (IFP128::from_uint(0), IFP128::from_uint(1000)),
+        (IFP128::from_uint(383).sign_reverse(), IFP128::from_uint(923)),
+        (IFP128::from_uint(708).sign_reverse(), IFP128::from_uint(707)),
+        (IFP128::from_uint(924).sign_reverse(), IFP128::from_uint(382)),
+        (IFP128::from_uint(1000).sign_reverse(), IFP128::from_uint(0)),
+        (IFP128::from_uint(924).sign_reverse(), IFP128::from_uint(383).sign_reverse()),
+        (IFP128::from_uint(708).sign_reverse(), IFP128::from_uint(708).sign_reverse()),
+        (IFP128::from_uint(383).sign_reverse(), IFP128::from_uint(924).sign_reverse()),
+        (IFP128::from_uint(1).sign_reverse(), IFP128::from_uint(1000).sign_reverse()),
+        (IFP128::from_uint(382), IFP128::from_uint(924).sign_reverse()),
+        (IFP128::from_uint(707), IFP128::from_uint(708).sign_reverse()),
+        (IFP128::from_uint(923), IFP128::from_uint(383).sign_reverse()),
     ];
 
     let mut hasher = Hasher::new();
@@ -70,10 +70,10 @@ fn get_corners(x: u32, y: u32, scale: u32) -> [(u32, u32); 4] {
     ]
 }
 
-fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP256 {
+fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP128 {
     let corners = get_corners(x, y, scale);
 
-    let mut res_numerator = IFP256::zero();
+    let mut res_numerator = IFP128::zero();
 
     let mut i = 0;
     while i < 4 {
@@ -81,8 +81,8 @@ fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP256 {
 
         // this has an implicit denominator of scale
         let offset = (
-            IFP256::from_uint(u64::from(x)) - IFP256::from_uint(u64::from(corner.0)),
-            IFP256::from_uint(u64::from(y)) - IFP256::from_uint(u64::from(corner.1)),
+            IFP128::from_uint(u64::from(x)) - IFP128::from_uint(u64::from(corner.0)),
+            IFP128::from_uint(u64::from(y)) - IFP128::from_uint(u64::from(corner.1)),
         );
 
         // this has an implicit denominator of VECS_DENOM
@@ -95,17 +95,17 @@ fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP256 {
         let weight = get_weight(corner.0, corner.1, x, y, scale);
 
         // this has an implicit denominator of VECS_DENOM * scale ** 3
-        res_numerator += IFP256::from_uint(weight) * dot;
+        res_numerator += IFP128::from_uint(weight) * dot;
 
         i += 1;
     }
 
-    let scale = IFP256::from_uint(u64::from(scale));
+    let scale = IFP128::from_uint(u64::from(scale));
     (((res_numerator / VECS_DENOM) / scale) / scale) /scale
 }
 
-pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> U128 {
-    let mut perlin = IFP256::zero();
+pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> u64 {
+    let mut perlin = IFP128::zero();
 
     let mut i = 0u32;
     while i < 3 {
@@ -116,9 +116,9 @@ pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> U128 {
     }
     perlin = perlin + get_single_scale_perlin(x, y, scale, seed);
 
-    perlin = perlin / IFP256::from_uint(4);
+    perlin = perlin / IFP128::from_uint(4);
 
-    let perlin_scaled_shifted = (perlin * IFP256::from_uint(PERLIN_MAX / 2)) + IFP256::from_uint(PERLIN_MAX / 2);
+    let perlin_scaled_shifted = (perlin * IFP128::from_uint(PERLIN_MAX / 2)) + IFP128::from_uint(PERLIN_MAX / 2);
 
     perlin_scaled_shifted.underlying().underlying()
 }
