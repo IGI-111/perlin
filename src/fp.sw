@@ -125,5 +125,5 @@ pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32, octaves: u32) -> u8
 
 #[test]
 fn test_run() {
-    compute_perlin(0, 0, 42, 1);
+    compute_perlin(0, 0, 42, 1, 4);
 }
