@@ -106,6 +106,18 @@ fn inoise16_raw(x: u32, y: u32) -> I16 {
     return ans;
 }
 
+pub fn inoise16(x: u32, y: u32) -> u16{
+    let mut  ans = inoise16_raw(x,y);
+    ans = ans + I16::try_from(17308).unwrap();
+    let mut pan = u32::from(ans.underlying())- u32::from(I16::indent());
+    // pan = (ans * 242L) >> 7.  That's the same as:
+    // pan = (ans * 484L) >> 8.  And this way avoids a 7X four-byte shift-loop on AVR.
+    // Identical math, except for the highest bit, which we don't care about anyway,
+    // since we're returning the 'middle' 16 out of a 32-bit value anyway.
+    pan *= 484;
+    u16::try_from(pan>>8).unwrap()
+}
+
 
 fn avg7(i: I8, j: I8) -> I8 {
     return (i/I8::try_from(2).unwrap() ) + (j/I8::try_from(2).unwrap()) + I8::try_from(i.underlying() & 0x1).unwrap();
@@ -220,10 +232,49 @@ pub fn inoise8(x: u16, y: u16) -> u8 {
     return ans;
 }    
 
+
+
+pub fn fbm_inoise16(x: u32, y: u32, octaves: u8, persistence: u16) -> u16 {
+    // Start with the base frequency and amplitude
+    let mut total: u32 = 0;
+    let mut frequency: u32 = 1;
+    let mut amplitude: u32 = 65535; // Start with max amplitude (2^16 - 1)
+    let mut max_value: u32 = 0;
+
+    // Add successive octaves
+    let mut i = 0u8;
+    while i < octaves {
+        // Get the noise value at this octave
+        let noise_val = u32::from(inoise16(x * frequency, y * frequency));
+        
+        // Add weighted noise to total
+        total += (noise_val * amplitude) >> 16;
+        
+        // Keep track of maximum possible value for normalization
+        max_value += amplitude;
+        
+        // Update frequency and amplitude for next octave
+        frequency *= 2;
+        // Scale amplitude by persistence (fixed point arithmetic)
+        amplitude = (amplitude * u32::from(persistence)) >> 16;
+        
+        i += 1;
+    }
+
+    // Normalize the result to fit in u16 range
+    u16::try_from((total << 16) / max_value).unwrap()
+}
+
 #[test]
 fn run_test() {
     inoise8(1, 1);
     inoise8(2, 1);
     inoise8(2, 42);
+    inoise16(1, 1);
+    inoise16(2, 1);
+    inoise16(2, 42);
+    fbm_inoise16(1, 1, 4, 32768);
+    fbm_inoise16(2, 1, 6, 49152);
+    fbm_inoise16(2, 42, 4, 32768);
 }
  
