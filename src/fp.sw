@@ -120,7 +120,7 @@ pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> u8 {
 
     let perlin_scaled_shifted = (perlin * IFP256::from(PERLIN_MAX / 2)) + IFP256::from(PERLIN_MAX / 2);
 
-    u8::try_from(perlin_scaled_shifted.round().0).unwrap()
+    u8::try_from(perlin_scaled_shifted.floor().0).unwrap()
 }
 
 #[test]
