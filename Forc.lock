@@ -3,9 +3,15 @@ name = "core"
 source = "path+from-root-2AB5BCE55EAAEFF4"
 
 [[package]]
+name = "fixed_point"
+source = "git+https://github.com/IGI-111/fixed_point.git?default-branch#1d21268b9c6bf4819da2bf17f21b82e832e551c0"
+dependencies = ["std"]
+
+[[package]]
 name = "perlin"
 source = "member"
 dependencies = [
+    "fixed_point",
     "std",
     "sway_libs",
 ]

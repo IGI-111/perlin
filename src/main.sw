@@ -1,10 +1,11 @@
 library;
 
+pub mod fp;
+
 // use perlin::compute_perlin;
 use sway_libs::signed_integers::i16::*;
 use sway_libs::signed_integers::i8::*;
 use sway_libs::signed_integers::common::WrappingNeg;
-
 
 const P: [u8;256] = [
 151,160,137,91,90,15,

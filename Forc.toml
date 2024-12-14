@@ -6,3 +6,4 @@ name = "perlin"
 
 [dependencies]
 sway_libs = { git = "https://github.com/FuelLabs/sway-libs" }
+fixed_point = { git = "https://github.com/IGI-111/fixed_point.git" }
