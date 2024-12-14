@@ -104,11 +104,11 @@ fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP256 {
     (((res_numerator / VECS_DENOM) / scale) / scale) /scale
 }
 
-pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> u8 {
+pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32, octaves: u32) -> u8 {
     let mut perlin = IFP256::zero();
 
     let mut i = 0u32;
-    while i < 3 {
+    while i < octaves-1 {
         let v = get_single_scale_perlin(x, y, scale * 2u32.pow(i), seed);
         perlin = perlin + v;
 
