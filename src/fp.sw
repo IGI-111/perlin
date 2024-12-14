@@ -6,7 +6,7 @@ use std::u128::*;
 use fixed_point::*;
 
 const VECS_DENOM: IFP256 = IFP256::from(1000);
-const PERLIN_MAX: u256 = 256;
+const PERLIN_MAX: u256 = 255;
 
 // returns a random unit vector
 // implicit denominator of VECS_DENOM
@@ -104,7 +104,7 @@ fn get_single_scale_perlin(x: u32, y: u32, scale: u32, seed: u32) -> IFP256 {
     (((res_numerator / VECS_DENOM) / scale) / scale) /scale
 }
 
-pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> IFP256 {
+pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> u8 {
     let mut perlin = IFP256::zero();
 
     let mut i = 0u32;
@@ -120,8 +120,7 @@ pub fn compute_perlin(x: u32, y: u32, seed: u32, scale: u32) -> IFP256 {
 
     let perlin_scaled_shifted = (perlin * IFP256::from(PERLIN_MAX / 2)) + IFP256::from(PERLIN_MAX / 2);
 
-    perlin_scaled_shifted
-
+    u8::try_from(perlin_scaled_shifted.round().0).unwrap()
 }
 
 #[test]
